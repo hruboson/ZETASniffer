@@ -1,7 +1,10 @@
 #include <iostream>
- 
+
+#include "config.hpp"
+
 int main(int argc, char *argv[])
 {
-	std::cout << "Hello world!" << std::endl;
+	Configuration::Config conf{};
+	std::cout << conf.protocol() << std::endl;
 	return 0;
 }

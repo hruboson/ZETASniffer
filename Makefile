@@ -1,5 +1,5 @@
 # Compiler
-CC = g++
+CXX = g++
 
 # Compiler flags
 CFLAGS = -std=c++20 -Wall -Wextra -pedantic
@@ -16,17 +16,17 @@ INCDIR = include
 TARGET = ipk-sniffer 
 
 # Build directory
-BUILDDIR = ./
+BUILDDIR = .
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -I$(INCDIR) $^ -o ./$@
+	$(CXX) $(CFLAGS) -I$(INCDIR) $^ -o ./$@
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
+	$(CXX) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 .PHONY: clean
 
 clean:
-	rm -rf $(BUILDDIR)
+	rm -rf main.o $(TARGET) 
