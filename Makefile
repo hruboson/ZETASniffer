@@ -27,7 +27,11 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp
 	$(CXX) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 .PHONY: clean
+.PHONY: run
 
 clean:
 	rm -rf $(OBJS) $(TARGET)
+
+run:
+	./$(TARGET)
 
