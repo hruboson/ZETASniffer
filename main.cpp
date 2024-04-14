@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-	Configuration::Config conf{};
-	std::cout << conf.protocol() << std::endl;
+	conf::Config conf{argc, argv};
+	conf.print();	
 	return 0;
 }

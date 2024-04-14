@@ -1,7 +1,16 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-namespace Configuration{
+#include <string>
+#include <cstdint>
+
+#define ARP 1
+#define ICMP4 2
+#define ICMP6 4
+#define IGMP 8
+#define MLD 16
+
+namespace conf{
 
 enum PROTOCOL{
 	UDP,
@@ -10,11 +19,48 @@ enum PROTOCOL{
 
 class Config{
 private:
-	PROTOCOL protocol_;
+	PROTOCOL _protocol;
+	void protocol(PROTOCOL protocol);
+	std::string _intfc;
+	void intfc(std::string intfc);
+	uint16_t _port;
+	void port(uint16_t port);
+	uint16_t _port_d;
+	void port_d(uint16_t port_d);
+	uint16_t _port_s;
+	void port_s(uint16_t port_s);
+	int _num;
+	void num(int num);
+
+	/* these values are stored in flags as bit values
+	bool _arp;
+	bool _ucmp4;
+	bool _icmp6;
+	bool _igmp;
+	bool _mld; */
+	char _flags;
+	void set_flags(char flags);
 public:
-	//  GET-SET
+	Config(int argc, char *argv[]); // Config contructor is arg parser
+	void print();
+
+	// GET
 	PROTOCOL protocol();
-	PROTOCOL protocol(PROTOCOL protocol);
+	std::string intfc();
+	uint16_t port();
+	uint16_t port_d();
+	uint16_t port_s();
+	int num();
+
+	/**
+	* Use bitwise operator OR (|) to set flags, defined in config.hpp
+	*/
+	bool arp();
+	bool ucmp4();
+	bool icmp6();
+	bool igmp();
+	bool mld();
+	void print_flags();
 };
 
 } // namespace Configuration
