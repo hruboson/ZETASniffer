@@ -61,6 +61,7 @@ Config::Config(int argc, char *argv[]){
 				std::cout << device->name << std::endl;
 				device = device->next; 
 			}
+			exit(EXIT_SUCCESS);
 		}
 	}
 	if(f_port){
