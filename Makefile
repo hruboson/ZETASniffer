@@ -33,5 +33,5 @@ clean:
 	rm -rf $(OBJS) $(TARGET)
 
 run:
-	./$(TARGET)
+	./$(TARGET) -i
 
