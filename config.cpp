@@ -1,6 +1,7 @@
 #include "config.hpp"
 #include "args.hxx" // external library https://github.com/Taywee/args
 
+#include <iostream>
 #include <bitset>
 
 using namespace conf;

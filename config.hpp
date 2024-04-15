@@ -39,9 +39,17 @@ private:
 	bool _igmp;
 	bool _mld; */
 	char _flags;
+	/**
+	* Use bitwise operator OR (|) to set flags, defined in config.hpp
+	*/
 	void set_flags(char flags);
 public:
 	Config(int argc, char *argv[]); // Config contructor is arg parser
+
+	// Singleton hack
+	Config(const Config&) = delete;
+	Config& operator = (const Config&) = delete;
+
 	void print();
 
 	// GET
@@ -52,9 +60,6 @@ public:
 	uint16_t port_s();
 	int num();
 
-	/**
-	* Use bitwise operator OR (|) to set flags, defined in config.hpp
-	*/
 	bool arp();
 	bool ucmp4();
 	bool icmp6();
