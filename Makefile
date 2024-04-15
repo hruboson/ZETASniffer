@@ -2,7 +2,7 @@
 CXX = g++
 
 # Compiler flags
-CFLAGS = -std=c++20 -Wall -Wextra -pedantic
+CFLAGS = -std=c++20 -Wall -Wextra -pedantic -lpcap
 
 # Source files
 SRCDIR = .
