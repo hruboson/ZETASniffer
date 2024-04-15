@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <bitset>
+#include <pcap/pcap.h>
 
 using namespace conf;
 
@@ -46,8 +47,20 @@ Config::Config(int argc, char *argv[]){
 	if(f_intfc){
 		this->intfc(args::get(f_intfc));
 		if(args::get(f_intfc) == ""){
-			// TODO
-			std::cout << "available interfaces" << std::endl;
+			/**
+			* List all available interfaces 
+			*/
+			pcap_if_t *alldevsp , *device;
+			char errbuf[PCAP_ERRBUF_SIZE];
+			if(pcap_findalldevs(&alldevsp, errbuf)){
+				printf("Error: %s" , errbuf);
+				exit(EXIT_FAILURE);
+			}
+			device = alldevsp;
+			while(device != NULL){
+				std::cout << device->name << std::endl;
+				device = device->next; 
+			}
 		}
 	}
 	if(f_port){
