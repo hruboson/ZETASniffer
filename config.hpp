@@ -13,23 +13,24 @@
 namespace conf{
 
 enum PROTOCOL{
+	ALL,
 	UDP,
 	TCP
 };
 
 class Config{
 private:
-	PROTOCOL _protocol;
+	PROTOCOL _protocol = ALL;
 	void protocol(PROTOCOL protocol);
 	std::string _intfc;
 	void intfc(std::string intfc);
-	uint16_t _port;
+	uint16_t _port = 0;
 	void port(uint16_t port);
-	uint16_t _port_d;
+	uint16_t _port_d = 0;
 	void port_d(uint16_t port_d);
-	uint16_t _port_s;
+	uint16_t _port_s = 0;
 	void port_s(uint16_t port_s);
-	int _num;
+	int _num = 1;
 	void num(int num);
 
 	/* these values are stored in flags as bit values

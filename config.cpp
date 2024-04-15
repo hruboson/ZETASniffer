@@ -93,9 +93,17 @@ Config::Config(int argc, char *argv[]){
 }
 
 void Config::print(){
+	std::string prt;
+	if(this->protocol() == ALL){
+		prt = "ALL";
+	}else if(this->protocol() == UDP){
+		prt = "UDP";
+	}else if(this->protocol() == TCP){
+		prt = "TCP";
+	}
 	std::cout 
 		<< "Interface:" << this->intfc() << std::endl 
-		<< "Protocol: " << (this->protocol() ? "TCP": "UDP") << std::endl 
+		<< "Protocol: " << prt << std::endl 
 		<< "Port:     " << this->port() << std::endl 
 		<< "Port dst: " << this->port_d() << std::endl
 		<< "Port src: " << this->port_s() << std::endl
