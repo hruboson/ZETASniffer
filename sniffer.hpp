@@ -70,6 +70,7 @@ private:
 	}
 public:
 	Sniffer(conf::Config &config);
+	~Sniffer();
 	void sniff();
 	static void stop_sniffing(int sig_num){
 		pcap_close(Sniffer::pd);

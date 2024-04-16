@@ -14,6 +14,10 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 	this->filter = "";
 }
 
+Sniffer::~Sniffer(){
+	pcap_close(Sniffer::pd);
+}
+
 void Sniffer::sniff(){
 	// set signal handler (closes pd descriptor)
     signal(SIGINT, Sniffer::stop_sniffing);
@@ -68,6 +72,8 @@ pcap_t* Sniffer::create_pcap_handle(const char* interface, const char* filter){
 		err_message.append(errbuf);
 		throw std::runtime_error(err_message);
 	}
+
+	pcap_freecode(&bpf);
 
 	return handle;
 }
