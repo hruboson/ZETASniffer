@@ -11,7 +11,7 @@
 
 Sniffer::Sniffer(conf::Config &config) : config{config}{	
 	// TODO set filter
-	this->filter = "icmp";
+	this->filter = "";
 }
 
 void Sniffer::sniff(){
@@ -27,7 +27,7 @@ void Sniffer::sniff(){
 			err_message.append(pcap_geterr(Sniffer::pd));
 			throw std::runtime_error(err_message);
 		}
-	}catch(std::runtime_error e){
+	}catch(std::runtime_error &e){
 		std::cerr << e.what() << std::endl;
 	}
 }
@@ -35,19 +35,18 @@ void Sniffer::sniff(){
 pcap_t* Sniffer::create_pcap_handle(const char* interface, const char* filter){
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_t *handle = NULL;
-	struct bpf_program bpf;
+	struct bpf_program bpf; // binary packet filter
 	bpf_u_int32 netmask;
 	bpf_u_int32 srcip;
-	//TODO anti
 
-    // Get network device source IP address and netmask.
+    // get network interface source IP address and netmask
 	if (pcap_lookupnet(interface, &srcip, &netmask, errbuf) == PCAP_ERROR) {
 		std::string err_message = "pcap_lookup failed: ";
 		err_message.append(errbuf);
 		throw std::runtime_error(err_message);
 	}
 
-    // Open the device for live capture.
+    // open interface for live capture
 	handle = pcap_open_live(interface, BUFSIZ, 1, 1000, errbuf);
 	if (handle == NULL) {
 		std::string err_message = "pcap_open_live failed: ";
@@ -55,7 +54,7 @@ pcap_t* Sniffer::create_pcap_handle(const char* interface, const char* filter){
 		throw std::runtime_error(err_message);
 	}
 
-	// Convert the packet filter epxression into a packet filter binary.
+	// filter to packet filter binary
 	if (pcap_compile(handle, &bpf, filter, 0, netmask) == PCAP_ERROR){
 		std::string err_message = "pcap_compile failed: ";
 		err_message.append(errbuf);
@@ -63,7 +62,7 @@ pcap_t* Sniffer::create_pcap_handle(const char* interface, const char* filter){
 
 	} 
 
-    // Bind the packet filter to the libpcap handle.
+    // bind packet filter to handle 
 	if (pcap_setfilter(handle, &bpf) == PCAP_ERROR) {
 		std::string err_message = "pcap_setfilter failed: ";
 		err_message.append(errbuf);
@@ -80,6 +79,8 @@ void Sniffer::get_link_layer_type_size(pcap_t* handle){
 		return;
 	}
 
+	std::cout << "Link layer type: " << link_layer_type << std::endl;
+
 	//TODO add more link layer types
 	switch (link_layer_type){
 		case DLT_NULL:
@@ -93,7 +94,8 @@ void Sniffer::get_link_layer_type_size(pcap_t* handle){
 			this->link_layer_type_len = 24;
 			break;
 		default:
-			throw std::runtime_error("unknown datalink");
+			this->link_layer_type_len = 16;
+			break;
 	}
 }
 
