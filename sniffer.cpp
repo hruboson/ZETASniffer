@@ -85,7 +85,7 @@ void Sniffer::get_link_layer_type_size(pcap_t* handle){
 		return;
 	}
 
-	std::cout << "Link layer type: " << link_layer_type << std::endl;
+	//std::cout << "Link layer type: " << link_layer_type << std::endl;
 
 	//TODO add more link layer types
 	switch (link_layer_type){

@@ -4,13 +4,17 @@
 #include <cstring>
 #include <iostream>
 #include <iomanip>
-#include <netinet/ip.h>
 #include <string>
 #include <pcap/pcap.h>
+#include <netinet/if_ether.h>
+#include <netinet/ip.h>
+#include <netinet/ip6.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
+#include <netinet/icmp6.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/ether.h>
+#include <net/if_arp.h>
 #include <ctime>
 #include <cmath>
 
@@ -28,10 +32,7 @@ private:
 	inline static void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_char *packet){
 		struct ip* iphdr;
 		struct ether_header* ehdr;
-		struct icmp* icmphdr;
-		struct tcphdr* tcphdr;
-		struct udphdr* udphdr;
-		char iphdrInfo[256];
+		//char iphdrInfo[256];
 		char srcip[256];
 		char dstip[256];
 		char srcmac[256];
@@ -51,24 +52,74 @@ private:
 		int gmtoff_hour = std::abs(timestamp_tm->tm_gmtoff / 3600);
 	    int gmtoff_min = std::abs(timestamp_tm->tm_gmtoff % 3600) / 60;
 
-		// Skip the datalink layer header and get the IP header fields.
+		// prepare hexdump before moving packet pointer
+		std::stringstream hexdump;
+		for (bpf_u_int32 i = 0; i < packethdr->len; i++) {
+			if (i % 16 == 0) {
+				hexdump << "0x" << std::hex << std::setw(4) << std::setfill('0') << i << ": ";
+			}
+			hexdump << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(packet[i]) << " ";
+			if ((i + 1) % 16 == 0) {
+				for (bpf_u_int32 j = i - 15; j <= i; j++) {
+					if(j % 16 == 8){
+						hexdump << " ";
+					}
+					if (std::isprint(packet[j])) {
+						hexdump << packet[j];
+					} else {
+						hexdump << ".";
+					}
+				}
+				hexdump << std::endl;
+			}
+		}
+
+		// move packet pointer to IP header fields 
 		packet += Sniffer::link_layer_type_len;
 		iphdr = (struct ip*)packet;
 		strcpy(srcip, inet_ntoa(iphdr->ip_src));
 		strcpy(dstip, inet_ntoa(iphdr->ip_dst));
-		
-	 
-		// Advance to the transport layer header then parse and display
-		// the fields based on the type of hearder: tcp, udp or icmp.
+
+		// move packet pointer to transport layer header 
 		packet += 4*iphdr->ip_hl;
-		switch(iphdr->ip_p){
+		struct tcphdr *tcphdr = NULL;
+		struct udphdr *udphdr = NULL;
+		struct icmphdr *icmphdr = NULL;
+		struct icmp6hdr *icmp6hdr = NULL;
+		struct arphdr *arphdr = NULL;
+		struct ndphdr *ndphdr = NULL;
+		struct igmphdr *igmphdr = NULL;
+		struct mldhdr *mldhdr = NULL;
+		switch(iphdr->ip_p) {
 			case IPPROTO_TCP:
 				tcphdr = (struct tcphdr*) packet;
 				break;
 			case IPPROTO_UDP:
 				udphdr = (struct udphdr*) packet;
 				break;
+			case IPPROTO_ICMP:
+				icmphdr = (struct icmphdr*) packet;
+				break;
+			case IPPROTO_ICMPV6:
+				icmp6hdr = (struct icmp6hdr*) packet;
+				break;
+			/*case ETHERNET_PROTO_ARP:
+				arphdr = (struct arphdr*) packet;
+				break;
+			case ETHERNET_PROTO_NDP:
+				ndphdr = (struct ndphdr*) packet;
+				break;*/
+			case IPPROTO_IGMP:
+				igmphdr = (struct igmphdr*) packet;
+				break;
+			/*case IPPROTO_MLD:
+				mldhdr = (struct mldhdr*) packet;
+				break;*/
+			default:
+				break;
 		}
+		
+		// print everything
 		std::cout <<
 			"timestamp: " // this was painful :( timestamp_tm doen't have microseconds so you can't just do strftime
 						<< timestamp << "." << std::setw(3) << std::setfill('0') << packethdr->ts.tv_usec / 1000 
@@ -76,9 +127,12 @@ private:
 						std::endl <<
 			"src MAC: " << srcmac << std::endl << 
 			"dst MAC: " << dstmac << std::endl <<
-			"frame length: " << ntohs(iphdr->ip_len) << std::endl <<
+			"frame length: " << packethdr->len << " bytes" << std::endl <<
 			"src IP: " << srcip << std::endl <<
-			"dst IP: " << dstip << std::endl << std::endl;
+			"dst IP: " << dstip << std::endl <<
+			hexdump.str() << std::endl;
+
+		std::cout << std::endl; // divider for packets
 	}
 public:
 	Sniffer(conf::Config &config);
