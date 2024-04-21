@@ -149,13 +149,13 @@ void Config::port_s(uint16_t port_s){
 	this->_port_s = port_s;
 }
 
-uint16_t Config::port(){
+int Config::port(){
 	return this->_port;
 }
-uint16_t Config::port_d(){
+int Config::port_d(){
 	return this->_port_d;
 }
-uint16_t Config::port_s(){
+int Config::port_s(){
 	return this->_port_s;
 }
 

@@ -57,9 +57,9 @@ public:
 	// GET
 	PROTOCOL protocol();
 	std::string intfc();
-	uint16_t port();
-	uint16_t port_d();
-	uint16_t port_s();
+	int port();
+	int port_d();
+	int port_s();
 	int num();
 
 	bool arp();
