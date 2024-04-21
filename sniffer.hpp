@@ -80,12 +80,18 @@ private:
 				hexdump << std::endl;
 			}
 
+			// print very last row of data
 			if(i == packethdr->len - 1){
-				for(bpf_u_int32 e = 16 - (i - 15); e > 0; e--){
+				hexdump << " ";
+				int e_len = (i%16) + 1;
+				for(bpf_u_int32 e = 16 - e_len; e > 0; e--){
 					hexdump << "   ";
 				}
-				for(bpf_u_int32 j = i - 15; j <= i; j++){
-					if(j % 16 == 8){
+				hexdump.seekp(-1, std::ios_base::end);
+				for(bpf_u_int32 j = i - e_len; j <= i; j++){
+					std::cout << e_len << std::endl;
+					if(j > packethdr->len) break;
+					if(j % 16 == 7){
 						hexdump << " ";
 					}
 					if (std::isprint(packet[j])) {
