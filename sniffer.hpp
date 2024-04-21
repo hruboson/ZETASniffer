@@ -65,30 +65,36 @@ private:
 
 			// print raw bytes
 			hexdump << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(packet[i]) << " ";
-			  if (i == packethdr->len - 1 || (i + 1) % 16 == 0) {
-    // Calculate remaining spaces for this row
-    int remainingSpaces = 16 - ((i + 1) % 16);
+			if ((i + 1) % 16 == 0) {
+				// print printable characters
+				for (bpf_u_int32 j = i - 15; j <= i; j++) {
+					if(j % 16 == 8){
+						hexdump << " ";
+					}
+					if (std::isprint(packet[j])) {
+						hexdump << packet[j];
+					} else {
+						hexdump << ".";
+					}
+				}
+				hexdump << std::endl;
+			}
 
-    // Print spaces for missing bytes
-    for (int j = 0; j < remainingSpaces * 3; j++) {
-      hexdump << " ";
-    }
-
-    // Print printable characters
-    for (bpf_u_int32 j = i - (remainingSpaces - 1); j <= i; j++) {
-      if (j >= 0) { // Check if j is within packet boundary
-        if (j % 16 == 8) {
-          hexdump << " ";
-        }
-        if (std::isprint(packet[j])) {
-          hexdump << packet[j];
-        } else {
-          hexdump << ".";
-        }
-      }
-    }
-    hexdump << std::endl;
-  }
+			if(i == packethdr->len - 1){
+				for(bpf_u_int32 e = 16 - (i - 15); e > 0; e--){
+					hexdump << "   ";
+				}
+				for(bpf_u_int32 j = i - 15; j <= i; j++){
+					if(j % 16 == 8){
+						hexdump << " ";
+					}
+					if (std::isprint(packet[j])) {
+						hexdump << packet[j];
+					} else {
+						hexdump << ".";
+					}
+				}
+			}
 		}
 
 		// move packet pointer to IP header fields 
