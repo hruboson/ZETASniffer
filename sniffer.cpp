@@ -10,22 +10,33 @@
 #include <netinet/ip_icmp.h>
 
 Sniffer::Sniffer(conf::Config &config) : config{config}{	
-	// TODO set filter
+	// filter builder
 	std::stringstream tmp_filter;
 
 	if(config.protocol() == conf::UDP){
-		if(config.port()){
-
+		tmp_filter << "udp ";
+		if(config.port() >= 0){
+			tmp_filter << "and port " << config.port() << ' ';
 		}else{
-			if(config.port_s()){
-
+			if(config.port_s() >= 0){
+				tmp_filter << "and src port " << config.port_s() << ' ';
 			}
-			if(config.port_d()){
-
+			if(config.port_d() >= 0){
+				tmp_filter << "and dst port " << config.port_d() << ' ';
 			}
 		}
 	}else if(config.protocol() == conf::TCP){
-
+		tmp_filter << "tcp ";
+		if(config.port() >= 0){
+			tmp_filter << "and port " << config.port() << ' ';
+		}else{
+			if(config.port_s() >= 0){
+				tmp_filter << "and src port " << config.port_s() << ' ';
+			}
+			if(config.port_d() >= 0){
+				tmp_filter << "and dst port " << config.port_d() << ' ';
+			}
+		}	
 	}
 
 	if(config.arp()){
@@ -38,14 +49,18 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 
 	}
 	if(config.igmp()){
-
+		if(tmp_filter.rdbuf()->in_avail() != 0){
+			tmp_filter << "or ";
+		}
+		tmp_filter << "igmp";
 	}
 	if(config.mld()){
 
 	}
 
 	
-	this->filter = "";
+	this->filter = tmp_filter.str();
+	std::cout << this->filter << std::endl;
 }
 
 Sniffer::~Sniffer(){

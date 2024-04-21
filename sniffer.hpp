@@ -138,23 +138,14 @@ private:
 				case IPPROTO_ICMPV6:
 					icmp6hdr = (struct icmp6hdr*) packet;
 					break;
-				/*case ETHERNET_PROTO_ARP:
-					arphdr = (struct arphdr*) packet;
-					break;
-				case ETHERNET_PROTO_NDP:
-					ndphdr = (struct ndphdr*) packet;
-					break;*/
 				case IPPROTO_IGMP:
 					igmphdr = (struct igmphdr*) packet;
 					break;
-				/*case IPPROTO_MLD:
-					mldhdr = (struct mldhdr*) packet;
-					break;*/
 				default:
 					break;
 			}
 		}else if(ntohs(ehdr->ether_type) == ETHERTYPE_ARP){
-
+			arphdr = (struct arphdr*) packet;
 		}
 
 		// print everything
