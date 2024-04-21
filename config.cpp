@@ -169,7 +169,7 @@ int Config::num(){
 bool Config::arp(){
 	return ((this->_flags & ARP) == ARP);
 }
-bool Config::ucmp4(){
+bool Config::icmp4(){
 	return ((this->_flags & ICMP4) == ICMP4);
 }
 bool Config::icmp6(){

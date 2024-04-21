@@ -25,11 +25,11 @@ private:
 	void protocol(PROTOCOL protocol);
 	std::string _intfc;
 	void intfc(std::string intfc);
-	uint16_t _port = 0;
+	int _port = -1;
 	void port(uint16_t port);
-	uint16_t _port_d = 0;
+	int _port_d = -1;
 	void port_d(uint16_t port_d);
-	uint16_t _port_s = 0;
+	int _port_s = -1;
 	void port_s(uint16_t port_s);
 	int _num = 1;
 	void num(int num);
@@ -63,7 +63,7 @@ public:
 	int num();
 
 	bool arp();
-	bool ucmp4();
+	bool icmp4();
 	bool icmp6();
 	bool ndp();
 	bool igmp();

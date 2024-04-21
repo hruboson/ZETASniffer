@@ -89,7 +89,6 @@ private:
 				}
 				hexdump.seekp(-1, std::ios_base::end);
 				for(bpf_u_int32 j = i - e_len; j <= i; j++){
-					std::cout << e_len << std::endl;
 					if(j > packethdr->len) break;
 					if(j % 16 == 7){
 						hexdump << " ";

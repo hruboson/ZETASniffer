@@ -12,6 +12,38 @@
 Sniffer::Sniffer(conf::Config &config) : config{config}{	
 	// TODO set filter
 	std::stringstream tmp_filter;
+
+	if(config.protocol() == conf::UDP){
+		if(config.port()){
+
+		}else{
+			if(config.port_s()){
+
+			}
+			if(config.port_d()){
+
+			}
+		}
+	}else if(config.protocol() == conf::TCP){
+
+	}
+
+	if(config.arp()){
+
+	}
+	if(config.icmp4()){
+
+	}
+	if(config.icmp6()){
+
+	}
+	if(config.igmp()){
+
+	}
+	if(config.mld()){
+
+	}
+
 	
 	this->filter = "";
 }
