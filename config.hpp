@@ -7,8 +7,9 @@
 #define ARP 1
 #define ICMP4 2
 #define ICMP6 4
-#define IGMP 8
-#define MLD 16
+#define NDP 8
+#define IGMP 16
+#define MLD 32
 
 namespace conf{
 
@@ -64,6 +65,7 @@ public:
 	bool arp();
 	bool ucmp4();
 	bool icmp6();
+	bool ndp();
 	bool igmp();
 	bool mld();
 	void print_flags();

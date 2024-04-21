@@ -42,8 +42,8 @@ private:
 	    ehdr = (struct ether_header *) packet;
 		const struct ether_addr *eaddr_src = (const struct ether_addr*) &ehdr->ether_shost;
 		const struct ether_addr *eaddr_dst = (const struct ether_addr*) &ehdr->ether_dhost;
-		sprintf(srcmac, "%02x:%02x:%02x:%02x:%02x:%02x",eaddr_src->ether_addr_octet[0],eaddr_src->ether_addr_octet[1],eaddr_src->ether_addr_octet[2],eaddr_src->ether_addr_octet[3],eaddr_src->ether_addr_octet[4],eaddr_src->ether_addr_octet[5]);
-		sprintf(dstmac, "%02x:%02x:%02x:%02x:%02x:%02x",eaddr_dst->ether_addr_octet[0],eaddr_dst->ether_addr_octet[1],eaddr_dst->ether_addr_octet[2],eaddr_dst->ether_addr_octet[3],eaddr_dst->ether_addr_octet[4],eaddr_dst->ether_addr_octet[5]);
+		sprintf(srcmac, "%02x:%02x:%02x:%02x:%02x:%02x", eaddr_src->ether_addr_octet[0],eaddr_src->ether_addr_octet[1],eaddr_src->ether_addr_octet[2],eaddr_src->ether_addr_octet[3],eaddr_src->ether_addr_octet[4],eaddr_src->ether_addr_octet[5]);
+		sprintf(dstmac, "%02x:%02x:%02x:%02x:%02x:%02x", eaddr_dst->ether_addr_octet[0],eaddr_dst->ether_addr_octet[1],eaddr_dst->ether_addr_octet[2],eaddr_dst->ether_addr_octet[3],eaddr_dst->ether_addr_octet[4],eaddr_dst->ether_addr_octet[5]);
 
 		// timestamp
 		struct tm *timestamp_tm = localtime(&packethdr->ts.tv_sec); // convert to localtime for strftime
@@ -82,6 +82,8 @@ private:
 
 		// move packet pointer to transport layer header 
 		packet += 4*iphdr->ip_hl;
+
+		// cast packet to correct structure
 		struct tcphdr *tcphdr = NULL;
 		struct udphdr *udphdr = NULL;
 		struct icmphdr *icmphdr = NULL;
@@ -90,35 +92,39 @@ private:
 		struct ndphdr *ndphdr = NULL;
 		struct igmphdr *igmphdr = NULL;
 		struct mldhdr *mldhdr = NULL;
-		switch(iphdr->ip_p) {
-			case IPPROTO_TCP:
-				tcphdr = (struct tcphdr*) packet;
-				break;
-			case IPPROTO_UDP:
-				udphdr = (struct udphdr*) packet;
-				break;
-			case IPPROTO_ICMP:
-				icmphdr = (struct icmphdr*) packet;
-				break;
-			case IPPROTO_ICMPV6:
-				icmp6hdr = (struct icmp6hdr*) packet;
-				break;
-			/*case ETHERNET_PROTO_ARP:
-				arphdr = (struct arphdr*) packet;
-				break;
-			case ETHERNET_PROTO_NDP:
-				ndphdr = (struct ndphdr*) packet;
-				break;*/
-			case IPPROTO_IGMP:
-				igmphdr = (struct igmphdr*) packet;
-				break;
-			/*case IPPROTO_MLD:
-				mldhdr = (struct mldhdr*) packet;
-				break;*/
-			default:
-				break;
+		if(ntohs(ehdr->ether_type) == ETHERTYPE_IP){
+			switch(iphdr->ip_p) {
+				case IPPROTO_TCP:
+					tcphdr = (struct tcphdr*) packet;
+					break;
+				case IPPROTO_UDP:
+					udphdr = (struct udphdr*) packet;
+					break;
+				case IPPROTO_ICMP:
+					icmphdr = (struct icmphdr*) packet;
+					break;
+				case IPPROTO_ICMPV6:
+					icmp6hdr = (struct icmp6hdr*) packet;
+					break;
+				/*case ETHERNET_PROTO_ARP:
+					arphdr = (struct arphdr*) packet;
+					break;
+				case ETHERNET_PROTO_NDP:
+					ndphdr = (struct ndphdr*) packet;
+					break;*/
+				case IPPROTO_IGMP:
+					igmphdr = (struct igmphdr*) packet;
+					break;
+				/*case IPPROTO_MLD:
+					mldhdr = (struct mldhdr*) packet;
+					break;*/
+				default:
+					break;
+			}
+		}else if(ntohs(ehdr->ether_type) == ETHERTYPE_ARP){
+
 		}
-		
+
 		// print everything
 		std::cout <<
 			"timestamp: " // this was painful :( timestamp_tm doen't have microseconds so you can't just do strftime
@@ -134,6 +140,7 @@ private:
 
 		std::cout << std::endl; // divider for packets
 	}
+
 public:
 	Sniffer(conf::Config &config);
 	~Sniffer();

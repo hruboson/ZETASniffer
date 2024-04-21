@@ -10,6 +10,9 @@ using namespace conf;
 Config::Config(int argc, char *argv[]){
 	char cli_flags = 0;
 
+	/**
+	* Parse arguments using the args library
+	*/
 	args::ArgumentParser parser("ZETA Sniffer - a simple packet sniffer", "");
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
 	args::Group udp_tcp(parser, "Only one of these can be specified:", args::Group::Validators::AtMostOne);
@@ -27,6 +30,7 @@ Config::Config(int argc, char *argv[]){
 	args::Flag f_arp(parser, "arp", "ARP flag", {"arp"});
 	args::Flag f_icmp4(parser, "icmp4", "ICMP4 flag", {"icmp4"});
 	args::Flag f_icmp6(parser, "icmp6", "ICMP6 flag", {"icmp6"});
+	args::Flag f_ndp(parser, "icmp6", "NDP flag", {"ndp"});
 	args::Flag f_igmp(parser, "igmp", "IGMP flag", {"igmp"});
 	args::Flag f_mld(parser, "mld", "MLD flag", {"mld"});
 	try{
@@ -86,6 +90,7 @@ Config::Config(int argc, char *argv[]){
 	if(f_arp){cli_flags = cli_flags | ARP;}
 	if(f_icmp4){cli_flags = cli_flags | ICMP4;}
 	if(f_icmp6){cli_flags = cli_flags | ICMP6;}
+	if(f_ndp){cli_flags = cli_flags | NDP;}
 	if(f_igmp){cli_flags = cli_flags | IGMP;}
 	if(f_mld){cli_flags = cli_flags | MLD;}
 	
@@ -111,6 +116,9 @@ void Config::print(){
 	this->print_flags();
 }
 
+/**
+* Getters and Setters
+*/
 PROTOCOL Config::protocol(){
 	return this->_protocol;	
 }
@@ -167,6 +175,9 @@ bool Config::ucmp4(){
 bool Config::icmp6(){
 	return ((this->_flags & ICMP6) == ICMP6);
 }
+bool Config::ndp(){
+	return ((this->_flags & NDP) == NDP);
+}
 bool Config::igmp(){
 	return ((this->_flags & IGMP) == IGMP);
 }
@@ -175,6 +186,6 @@ bool Config::mld(){
 }
 void Config::print_flags(){
 	std::bitset<8> f(this->_flags);
-	std::cout << "___MI64A" << std::endl;
+	std::cout << "__MIN64A" << std::endl;
 	std::cout << f << std::endl;
 }

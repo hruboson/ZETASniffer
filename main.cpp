@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
 	conf::Config conf{argc, argv};
-	//conf.print();	
+	conf.print();
 
 	Sniffer sniffer{conf};
 	sniffer.sniff();

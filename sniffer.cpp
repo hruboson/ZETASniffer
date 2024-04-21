@@ -11,6 +11,8 @@
 
 Sniffer::Sniffer(conf::Config &config) : config{config}{	
 	// TODO set filter
+	std::stringstream tmp_filter;
+	
 	this->filter = "";
 }
 
@@ -85,7 +87,7 @@ void Sniffer::get_link_layer_type_size(pcap_t* handle){
 		return;
 	}
 
-	//std::cout << "Link layer type: " << link_layer_type << std::endl;
+	std::cout << "Link layer type: " << link_layer_type << std::endl;
 
 	//TODO add more link layer types
 	switch (link_layer_type){
@@ -99,8 +101,11 @@ void Sniffer::get_link_layer_type_size(pcap_t* handle){
 		case DLT_PPP:
 			this->link_layer_type_len = 24;
 			break;
-		default:
+		case DLT_LINUX_SLL:
 			this->link_layer_type_len = 16;
+			break;
+		default:
+			std::cerr << "Unsupported link layer type" << std::endl;
 			break;
 	}
 }
