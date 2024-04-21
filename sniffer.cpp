@@ -40,26 +40,39 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 	}
 
 	if(config.arp()){
-
+		if(tmp_filter.rdbuf()->in_avail() != 0){
+			tmp_filter << "or ";
+		}
+		tmp_filter << "arp ";
 	}
 	if(config.icmp4()){
-
+		if(tmp_filter.rdbuf()->in_avail() != 0){
+			tmp_filter << "or ";
+		}
+		tmp_filter << "icmp4 ";
 	}
 	if(config.icmp6()){
-
+		if(tmp_filter.rdbuf()->in_avail() != 0){
+			tmp_filter << "or ";
+		}
+		tmp_filter << "icmp[0] = 8 or icmp[0] = 0 ";
 	}
 	if(config.igmp()){
 		if(tmp_filter.rdbuf()->in_avail() != 0){
 			tmp_filter << "or ";
 		}
-		tmp_filter << "igmp";
+		tmp_filter << "igmp ";
 	}
 	if(config.mld()){
-
+		if(tmp_filter.rdbuf()->in_avail() != 0){
+			tmp_filter << "or ";
+		}
+		tmp_filter << "mld ";
 	}
-
-	
+	#ifdef DEBUG
 	this->filter = tmp_filter.str();
+	#endif
+
 	std::cout << this->filter << std::endl;
 }
 

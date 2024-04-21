@@ -88,9 +88,9 @@ private:
 					hexdump << "   ";
 				}
 				hexdump.seekp(-1, std::ios_base::end);
-				for(bpf_u_int32 j = i - e_len; j <= i; j++){
+				for(bpf_u_int32 j = i - e_len + 1; j <= i; j++){
 					if(j > packethdr->len) break;
-					if(j % 16 == 7){
+					if(j % 16 == 8){
 						hexdump << " ";
 					}
 					if (std::isprint(packet[j])) {
