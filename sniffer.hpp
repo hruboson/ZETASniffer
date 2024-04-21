@@ -26,6 +26,7 @@ private:
 	std::string filter;
 	inline static int link_layer_type_len;
 	inline static pcap_t* pd;
+	bool initialized = 0;
 
 	pcap_t* create_pcap_handle(const char* interface, const char* filter);
 	void get_link_layer_type_size(pcap_t* handle);
@@ -37,6 +38,8 @@ private:
 		char dstip[256];
 		char srcmac[256];
 		char dstmac[256];
+		int srcport = -1;
+		int dstport = -1;
 
 		// get MAC from ethernet frame
 	    ehdr = (struct ether_header *) packet;
@@ -55,23 +58,37 @@ private:
 		// prepare hexdump before moving packet pointer
 		std::stringstream hexdump;
 		for (bpf_u_int32 i = 0; i < packethdr->len; i++) {
+			// print bytes order (0x0000, 0x0010, 0x0020, ...) 
 			if (i % 16 == 0) {
 				hexdump << "0x" << std::hex << std::setw(4) << std::setfill('0') << i << ": ";
 			}
+
+			// print raw bytes
 			hexdump << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(packet[i]) << " ";
-			if ((i + 1) % 16 == 0) {
-				for (bpf_u_int32 j = i - 15; j <= i; j++) {
-					if(j % 16 == 8){
-						hexdump << " ";
-					}
-					if (std::isprint(packet[j])) {
-						hexdump << packet[j];
-					} else {
-						hexdump << ".";
-					}
-				}
-				hexdump << std::endl;
-			}
+			  if (i == packethdr->len - 1 || (i + 1) % 16 == 0) {
+    // Calculate remaining spaces for this row
+    int remainingSpaces = 16 - ((i + 1) % 16);
+
+    // Print spaces for missing bytes
+    for (int j = 0; j < remainingSpaces * 3; j++) {
+      hexdump << " ";
+    }
+
+    // Print printable characters
+    for (bpf_u_int32 j = i - (remainingSpaces - 1); j <= i; j++) {
+      if (j >= 0) { // Check if j is within packet boundary
+        if (j % 16 == 8) {
+          hexdump << " ";
+        }
+        if (std::isprint(packet[j])) {
+          hexdump << packet[j];
+        } else {
+          hexdump << ".";
+        }
+      }
+    }
+    hexdump << std::endl;
+  }
 		}
 
 		// move packet pointer to IP header fields 
@@ -96,9 +113,13 @@ private:
 			switch(iphdr->ip_p) {
 				case IPPROTO_TCP:
 					tcphdr = (struct tcphdr*) packet;
+					srcport = ntohs(tcphdr->th_sport);
+					dstport = ntohs(tcphdr->th_dport);
 					break;
 				case IPPROTO_UDP:
 					udphdr = (struct udphdr*) packet;
+					srcport = ntohs(udphdr->uh_sport);
+					dstport = ntohs(udphdr->uh_dport);
 					break;
 				case IPPROTO_ICMP:
 					icmphdr = (struct icmphdr*) packet;
@@ -135,8 +156,15 @@ private:
 			"dst MAC: " << dstmac << std::endl <<
 			"frame length: " << packethdr->len << " bytes" << std::endl <<
 			"src IP: " << srcip << std::endl <<
-			"dst IP: " << dstip << std::endl <<
-			hexdump.str() << std::endl;
+			"dst IP: " << dstip << std::endl;
+
+		if(srcport != -1 && dstport != -1){
+			std::cout <<
+				"src port: " << std::to_string(srcport) << std::endl <<
+				"dst port: " << std::to_string(dstport) << std::endl;
+		}
+
+		std::cout << hexdump.str() << std::endl;
 
 		std::cout << std::endl; // divider for packets
 	}

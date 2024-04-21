@@ -17,7 +17,9 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 }
 
 Sniffer::~Sniffer(){
-	pcap_close(Sniffer::pd);
+	if(this->initialized){
+		pcap_close(Sniffer::pd);
+	}
 }
 
 void Sniffer::sniff(){
@@ -29,6 +31,7 @@ void Sniffer::sniff(){
 		Sniffer::pd = this->create_pcap_handle(this->config.intfc().c_str(), this->filter.c_str());
 		this->get_link_layer_type_size(Sniffer::pd);
 		if(pcap_loop(Sniffer::pd, this->config.num(), Sniffer::packet_handler, (u_char*)NULL) < 0){
+			this->initialized = true;
 			std::string err_message = "pcap_loop failed: ";
 			err_message.append(pcap_geterr(Sniffer::pd));
 			throw std::runtime_error(err_message);
@@ -47,7 +50,7 @@ pcap_t* Sniffer::create_pcap_handle(const char* interface, const char* filter){
 
     // get network interface source IP address and netmask
 	if (pcap_lookupnet(interface, &srcip, &netmask, errbuf) == PCAP_ERROR) {
-		std::string err_message = "pcap_lookup failed: ";
+		std::string err_message = "pcap_lookupnet failed: ";
 		err_message.append(errbuf);
 		throw std::runtime_error(err_message);
 	}
@@ -83,11 +86,8 @@ pcap_t* Sniffer::create_pcap_handle(const char* interface, const char* filter){
 void Sniffer::get_link_layer_type_size(pcap_t* handle){
 	int link_layer_type;
 	if((link_layer_type = pcap_datalink(handle)) == PCAP_ERROR){
-		//TODO throw
-		return;
+		throw std::runtime_error("PCAP ERROR");
 	}
-
-	std::cout << "Link layer type: " << link_layer_type << std::endl;
 
 	//TODO add more link layer types
 	switch (link_layer_type){
