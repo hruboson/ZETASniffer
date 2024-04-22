@@ -1,3 +1,9 @@
+/**
+* sniffer.cpp - ZETASniffer - simple packet sniffer
+* Author: Ondřej Hruboš (xhrubo01)
+* Date: 22.4.2024
+*/
+
 #include "sniffer.hpp"
 #include "config.hpp"
 
@@ -49,7 +55,7 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 		if(tmp_filter.rdbuf()->in_avail() != 0){
 			tmp_filter << "or ";
 		}
-		tmp_filter << "icmp4 ";
+		tmp_filter << "icmp ";
 	}
 	if(config.icmp6()){
 		if(tmp_filter.rdbuf()->in_avail() != 0){
@@ -62,6 +68,13 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 			tmp_filter << "or ";
 		}
 		tmp_filter << "igmp ";
+	}
+	if(config.ndp()){
+		//TODO
+		if(tmp_filter.rdbuf()->in_avail() != 0){
+			tmp_filter << "or ";
+		}
+		tmp_filter << "ndp ";
 	}
 	if(config.mld()){
 		if(tmp_filter.rdbuf()->in_avail() != 0){

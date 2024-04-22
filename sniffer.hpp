@@ -1,6 +1,13 @@
 #ifndef SNIFFER_H
 #define SNIFFER_H
 
+/**
+* sniffer.hpp - ZETASniffer - simple packet sniffer
+* Author: Ondřej Hruboš (xhrubo01)
+* Date: 22.4.2024
+*/
+
+
 #include <cstring>
 #include <iostream>
 #include <iomanip>
@@ -26,10 +33,14 @@ private:
 	std::string filter;
 	inline static int link_layer_type_len;
 	inline static pcap_t* pd;
-	bool initialized = 0;
+	bool initialized = 0; // signalizes whether pcap file descriptor was allocated, then is lated used to decide whether to free the file descriptor or not
 
 	pcap_t* create_pcap_handle(const char* interface, const char* filter);
 	void get_link_layer_type_size(pcap_t* handle);
+
+	/**
+	* Packet handler - prints the captured packet to stdout
+	*/
 	inline static void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_char *packet){
 		struct ip* iphdr;
 		struct ether_header* ehdr;
@@ -172,7 +183,7 @@ private:
 	}
 
 public:
-	Sniffer(conf::Config &config);
+	Sniffer(conf::Config &config); // builds the filter for pcap_compile
 	~Sniffer();
 	void sniff();
 	static void stop_sniffing(int sig_num){

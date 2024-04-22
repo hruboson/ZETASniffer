@@ -1,3 +1,9 @@
+/**
+* config.cpp - ZETASniffer - simple packet sniffer
+* Author: Ondřej Hruboš (xhrubo01)
+* Date: 22.4.2024
+*/
+
 #include "config.hpp"
 #include "args.hxx" // external library https://github.com/Taywee/args
 

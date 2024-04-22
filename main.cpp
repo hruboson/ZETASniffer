@@ -1,3 +1,9 @@
+/**
+* ZETASniffer - simple packet sniffer
+* Author: Ondřej Hruboš (xhrubo01)
+* Date: 22.4.2024
+*/
+
 #include "config.hpp"
 #include "sniffer.hpp"
 

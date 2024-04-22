@@ -1,6 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/**
+* config.hpp - ZETASniffer - simple packet sniffer
+* Author: Ondřej Hruboš (xhrubo01)
+* Date: 22.4.2024
+*/
+
 #include <string>
 #include <cstdint>
 
@@ -19,6 +25,10 @@ enum PROTOCOL{
 	TCP
 };
 
+/**
+* class Config
+* Singleton class used to parse command line arguments and store them
+*/
 class Config{
 private:
 	PROTOCOL _protocol = ALL;
