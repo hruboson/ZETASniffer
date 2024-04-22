@@ -21,7 +21,7 @@ Config::Config(int argc, char *argv[]){
 	*/
 	args::ArgumentParser parser("ZETA Sniffer - a simple packet sniffer", "");
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
-	args::Group ports(parser, "Only one of these can be specified:", args::Group::Validators::AtMostOne);
+	args::Group ports(parser, "Only one of these can be specified:", args::Group::Validators::DontCare);
 
 	args::ImplicitValueFlag<std::string> f_intfc(parser, "interface", "Interface. If no interface is specified, prints all available interfaces.", {'i', "interface"}, "", "", args::Options::Required);
 	args::ValueFlag<uint16_t> f_port(ports, "port", "Port (source and destination)",  {'p'});
@@ -49,6 +49,16 @@ Config::Config(int argc, char *argv[]){
 		exit(EXIT_FAILURE);
 	}catch(const args::ValidationError& e){
 		std::cerr << e.what() << std::endl;
+		std::cerr << parser;
+		exit(EXIT_FAILURE);
+	}
+
+	// not allowed combinations
+	if(f_port && (f_port_destination || f_port_source)){
+		std::cerr << parser;
+		exit(EXIT_FAILURE);
+	}
+	if((f_port || f_port_destination || f_port_source) && (!f_tcp && !f_udp)){
 		std::cerr << parser;
 		exit(EXIT_FAILURE);
 	}
@@ -92,6 +102,7 @@ Config::Config(int argc, char *argv[]){
 
 	if(f_udp){this->protocol(UDP);}
 	if(f_tcp){this->protocol(TCP);}
+	if(f_udp && f_tcp){this->protocol(ALL);}
 	if(f_arp){cli_flags = cli_flags | ARP;}
 	if(f_icmp4){cli_flags = cli_flags | ICMP4;}
 	if(f_icmp6){cli_flags = cli_flags | ICMP6;}
@@ -110,6 +121,8 @@ void Config::print(){
 		prt = "UDP";
 	}else if(this->protocol() == TCP){
 		prt = "TCP";
+	}else if(this->protocol() == NONE){
+		prt = "";
 	}
 	std::cout 
 		<< "Interface:" << this->intfc() << std::endl 

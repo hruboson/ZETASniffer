@@ -32,11 +32,35 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 			}
 		}
 		tmp_filter << ") ";
-	}
-	if(config.protocol() == conf::TCP){
+	}else if(config.protocol() == conf::TCP){
 		if(tmp_filter.rdbuf()->in_avail() != 0){
 			tmp_filter << "or ";
 		}
+		tmp_filter << "(tcp ";
+		if(config.port() >= 0){
+			tmp_filter << "and port " << config.port();
+		}else{
+			if(config.port_s() >= 0){
+				tmp_filter << "and src port " << config.port_s();
+			}
+			if(config.port_d() >= 0){
+				tmp_filter << "and dst port " << config.port_d();
+			}
+		}
+		tmp_filter << ") ";
+	}else if(config.protocol() == conf::ALL){
+		tmp_filter << "(udp ";
+		if(config.port() >= 0){
+			tmp_filter << "and port " << config.port();
+		}else{
+			if(config.port_s() >= 0){
+				tmp_filter << "and src port " << config.port_s();
+			}
+			if(config.port_d() >= 0){
+				tmp_filter << "and dst port " << config.port_d();
+			}
+		}
+		tmp_filter << ") or ";
 		tmp_filter << "(tcp ";
 		if(config.port() >= 0){
 			tmp_filter << "and port " << config.port();
@@ -85,12 +109,12 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
 			if(tmp_filter.rdbuf()->in_avail() != 0){
 				tmp_filter << "or ";
 			}
-            tmp_filter << "((icmp6 and (icmp6[0] == 128 or icmp6[0] == 129)) or (icmp6 and (icmp6[0] >= 130 and icmp6[0] <= 132))) ";
+            tmp_filter << "((icmp6 and (icmp6[0] = 128 or icmp6[0] = 129)) or (icmp6 and (icmp6[0] >= 130 and icmp6[0] <= 132))) ";
         } else {
 			if(tmp_filter.rdbuf()->in_avail() != 0){
 				tmp_filter << "or ";
 			}
-            tmp_filter << "(icmp6 and (icmp6[0] == 128 or icmp6[0] == 129)) ";
+            tmp_filter << "(icmp6 and (icmp6[0] = 128 or icmp6[0] = 129)) ";
         }
     }
 	if (config.ndp() && config.mld()) {
@@ -120,7 +144,7 @@ Sniffer::Sniffer(conf::Config &config) : config{config}{
         }
     }
 	#ifdef DEBUG
-	std::cout << "BPF Filter: " << this->filter << std::endl;
+	std::cout << "BPF Filter: " << tmp_filter.str() << std::endl;
 	#endif
 
 	this->filter = tmp_filter.str();

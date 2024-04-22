@@ -20,6 +20,7 @@
 namespace conf{
 
 enum PROTOCOL{
+	NONE,
 	ALL,
 	UDP,
 	TCP
@@ -31,7 +32,7 @@ enum PROTOCOL{
 */
 class Config{
 private:
-	PROTOCOL _protocol = ALL;
+	PROTOCOL _protocol = NONE;
 	void protocol(PROTOCOL protocol);
 	std::string _intfc;
 	void intfc(std::string intfc);
