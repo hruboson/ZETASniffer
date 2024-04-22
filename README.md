@@ -2,19 +2,24 @@
 
 ## Usage
 
-``
+`./ipk-sniffer [-i interface | --interface interface] {-p|--port-source|--port-destination port [--tcp|-t] [--udp|-u]} [--arp] [--ndp] [--icmp4] [--icmp6] [--igmp] [--mld] {-n num}`
 
 ## Documentation
-The networking part was programmed using the LIBCAP library[^3],
+The networking part was programmed using the LIBCAP library[^3]. 
+
+Fitlers are built in the `Sniffer` constructor by buildilng a **BPF** filter expressions[^2], which are then passed to the `pcap_compile()` function.
+
+Other sources of information were pcap tutorials[^1][^4].
 
 ### Class diagram
 
 ## External libraries
 
-- **args** - A single-header C++ library used for parsing of command line arguments. The library is the `args.hxx` file. Source: [Github repository](https://github.com/Taywee/args).
+- **args** - A single-header C++ library used to parse command line arguments. The library is the `args.hxx` file. Source: [Github repository](https://github.com/Taywee/args).
 
 ## Tests
 All testing was done comparing the output of Wireshark with my sniffer. Below are some examples of comparison between Wireshark and my implementation.
+Packets were simulated using the NetCat tool (`nc`).
 
 
 <!--- Resources --->
