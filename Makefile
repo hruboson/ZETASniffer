@@ -13,7 +13,7 @@ OBJS := $(SRCS:.cpp=.o)
 INCDIR = .
 
 # Executable name
-TARGET = ipk-sniffer.out
+TARGET = ipk-sniffer
 
 # Build directory
 BUILDDIR = .
