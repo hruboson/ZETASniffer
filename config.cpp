@@ -21,18 +21,17 @@ Config::Config(int argc, char *argv[]){
 	*/
 	args::ArgumentParser parser("ZETA Sniffer - a simple packet sniffer", "");
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
-	args::Group udp_tcp(parser, "Only one of these can be specified:", args::Group::Validators::AtMostOne);
-	args::Group ports(parser, "Only one of these can be specified", args::Group::Validators::AtMostOne);
+	args::Group ports(parser, "Only one of these can be specified:", args::Group::Validators::AtMostOne);
 
-	args::ImplicitValueFlag<std::string> f_intfc(parser, "interface", "Interface", {'i', "interface"}, "", "", args::Options::Required);
+	args::ImplicitValueFlag<std::string> f_intfc(parser, "interface", "Interface. If no interface is specified, prints all available interfaces.", {'i', "interface"}, "", "", args::Options::Required);
 	args::ValueFlag<uint16_t> f_port(ports, "port", "Port (source and destination)",  {'p'});
 	args::ValueFlag<uint16_t> f_port_destination(ports, "port destination", "Port destination",  {"port-destination"});
 	args::ValueFlag<uint16_t> f_port_source(ports, "port source", "Port source",  {"port-source"});
 	args::ValueFlag<int> f_num(parser, "num", "Number of packets to display",  {'n'});
 
 	// TODO change the helping strings
-	args::Flag f_udp(udp_tcp, "udp", "Display only UDP datagrams", {'u', "udp"});
-	args::Flag f_tcp(udp_tcp, "tcp", "Display only TCP segments", {'t', "tcp"});
+	args::Flag f_udp(parser, "udp", "Display UDP datagrams", {'u', "udp"});
+	args::Flag f_tcp(parser, "tcp", "Display TCP segments", {'t', "tcp"});
 	args::Flag f_arp(parser, "arp", "ARP flag", {"arp"});
 	args::Flag f_icmp4(parser, "icmp4", "ICMP4 flag", {"icmp4"});
 	args::Flag f_icmp6(parser, "icmp6", "ICMP6 flag", {"icmp6"});

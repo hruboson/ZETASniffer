@@ -42,6 +42,7 @@ private:
 	* Packet handler - prints the captured packet to stdout
 	*/
 	inline static void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_char *packet){
+		(void)user; // get rid of annoying warning about unused parameter (user must be parameter because of pcap)
 		struct ip* iphdr;
 		struct ether_header* ehdr;
 		//char iphdrInfo[256];
@@ -125,12 +126,12 @@ private:
 		// cast packet to correct structure
 		struct tcphdr *tcphdr = NULL;
 		struct udphdr *udphdr = NULL;
-		struct icmphdr *icmphdr = NULL;
+		/*struct icmphdr *icmphdr = NULL;
 		struct icmp6hdr *icmp6hdr = NULL;
 		struct arphdr *arphdr = NULL;
 		struct ndphdr *ndphdr = NULL;
 		struct igmphdr *igmphdr = NULL;
-		struct mldhdr *mldhdr = NULL;
+		struct mldhdr *mldhdr = NULL;*/
 		if(ntohs(ehdr->ether_type) == ETHERTYPE_IP){
 			switch(iphdr->ip_p) {
 				case IPPROTO_TCP:
@@ -144,19 +145,19 @@ private:
 					dstport = ntohs(udphdr->uh_dport);
 					break;
 				case IPPROTO_ICMP:
-					icmphdr = (struct icmphdr*) packet;
+					//icmphdr = (struct icmphdr*) packet;
 					break;
 				case IPPROTO_ICMPV6:
-					icmp6hdr = (struct icmp6hdr*) packet;
+					//icmp6hdr = (struct icmp6hdr*) packet;
 					break;
 				case IPPROTO_IGMP:
-					igmphdr = (struct igmphdr*) packet;
+					//igmphdr = (struct igmphdr*) packet;
 					break;
 				default:
 					break;
 			}
 		}else if(ntohs(ehdr->ether_type) == ETHERTYPE_ARP){
-			arphdr = (struct arphdr*) packet;
+			//arphdr = (struct arphdr*) packet;
 		}
 
 		// print everything
