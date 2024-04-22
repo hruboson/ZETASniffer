@@ -6,6 +6,8 @@ Author: Ondřej Hruboš (xhrubo01)
 
 Gitea: [https://git.fit.vutbr.cz/xhrubo01/ZETASniffer](https://git.fit.vutbr.cz/xhrubo01/ZETASniffer)
 
+[Changelog](CHANGELOG.md), [License](LICENSE)
+
 ## Usage
 
 `./ipk-sniffer [-i interface | --interface interface] {-p|--port-source|--port-destination port [--tcp|-t] [--udp|-u]} [--arp] [--ndp] [--icmp4] [--icmp6] [--igmp] [--mld] {-n num}`
